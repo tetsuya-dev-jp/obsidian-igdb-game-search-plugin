@@ -1,10 +1,10 @@
 {
-	"id": "obsidian-book-search-plugin",
-	"name": "Book Search",
-	"version": "0.7.5",
+	"id": "obsidian-igdb-game-search-plugin",
+	"name": "IGDB Game Search",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "Helps you find books and create notes.",
-	"author": "anpigon",
-	"authorUrl": "https://github.com/anpigon",
+	"description": "Search IGDB and create game notes in Obsidian.",
+	"author": "tetsuya-dev-jp",
+	"authorUrl": "https://github.com/tetsuya-dev-jp",
 	"isDesktopOnly": false
 }

@@ -1,52 +1,50 @@
-import { Book } from '@models/book.model';
+import { GameEntry } from '@models/game.model';
 import * as utils from './utils';
 
 jest.mock('@settings/settings', () => jest.fn());
 
-describe('util.js', () => {
-  const book: Book = {
-    title: '코스모스',
-    author: '칼 세이건',
-    authors: ['칼 세이건'],
+describe('utils', () => {
+  const game: GameEntry = {
+    title: 'Final Fantasy VII Rebirth',
+    developer: 'Square Enix',
+    developers: ['Square Enix'],
   };
 
-  it('replaceIllegalFileNameCharactersInString 1', () => {
-    expect(utils.replaceIllegalFileNameCharactersInString('재레드 다이아몬드의 <대변동 : 위기, 선택, 변화>')).toBe(
-      '재레드 다이아몬드의 대변동 위기 선택 변화',
+  it('replaceIllegalFileNameCharactersInString removes invalid characters', () => {
+    expect(utils.replaceIllegalFileNameCharactersInString('Like a Dragon: Infinite Wealth')).toBe(
+      'Like a Dragon Infinite Wealth',
     );
   });
 
-  it('replaceIllegalFileNameCharactersInString 2', () => {
-    expect(utils.replaceIllegalFileNameCharactersInString('2022 고시넷 초록이 NCS 모듈형 1 | 통합기본서(2판)')).toBe(
-      '2022 고시넷 초록이 NCS 모듈형 1 통합기본서(2판)',
+  it('replaceIllegalFileNameCharactersInString removes separators', () => {
+    expect(utils.replaceIllegalFileNameCharactersInString('Monster Hunter Wilds | Deluxe')).toBe(
+      'Monster Hunter Wilds Deluxe',
     );
   });
 
-  it('makeFileName 1', () => {
-    expect(utils.makeFileName(book)).toBe('코스모스 - 칼 세이건.md');
+  it('makeFileName uses the default title', () => {
+    expect(utils.makeFileName(game)).toBe('Final Fantasy VII Rebirth.md');
   });
 
-  it('makeFileName 2', () => {
-    const newBook = {
-      ...book,
-      author: '',
+  it('makeFileName removes invalid title characters', () => {
+    const newGame = {
+      ...game,
+      title: 'Metaphor: ReFantazio',
     };
-    expect(utils.makeFileName(newBook)).toBe('코스모스.md');
+    expect(utils.makeFileName(newGame)).toBe('Metaphor ReFantazio.md');
   });
 
-  it('makeFileName 3', () => {
-    expect(utils.makeFileName(book, '{{author}}-{{title}}')).toBe('칼 세이건-코스모스.md');
+  it('makeFileName supports template variables', () => {
+    expect(utils.makeFileName(game, '{{developer}}-{{title}}')).toBe('Square Enix-Final Fantasy VII Rebirth.md');
   });
 
-  it('makeFileName 4', () => {
-    expect(utils.makeFileName(book, '{{author}}-{{title}}')).toBe('칼 세이건-코스모스.md');
-  });
-
-  it('makeFileName 5', () => {
-    const newBook = {
-      ...book,
-      title: '코스모스 : 창백한 푸른점',
+  it('makeFileName supports mixed variables', () => {
+    const newGame = {
+      ...game,
+      title: 'Like a Dragon: Infinite Wealth',
     };
-    expect(utils.makeFileName(newBook, '{{title}} - {{author}}')).toBe('코스모스 창백한 푸른점 - 칼 세이건.md');
+    expect(utils.makeFileName(newGame, '{{title}} - {{developer}}')).toBe(
+      'Like a Dragon Infinite Wealth - Square Enix.md',
+    );
   });
 });

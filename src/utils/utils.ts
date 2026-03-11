@@ -1,7 +1,6 @@
-import { Book, FrontMatter } from '@models/book.model';
+import { FrontMatter, GameEntry } from '@models/game.model';
 import { DefaultFrontmatterKeyType } from '@settings/settings';
 
-// == Format Syntax == //
 export const NUMBER_REGEX = /^-?[0-9]*$/;
 export const DATE_REGEX = /{{DATE(\+-?[0-9]+)?}}/;
 export const DATE_REGEX_FORMATTED = /{{DATE:([^}\n\r+]*)(\+-?[0-9]+)?}}/;
@@ -14,54 +13,47 @@ export function isISBN(str: string) {
   return /^(97(8|9))?\d{9}(\d|X)$/.test(str);
 }
 
-export function makeFileName(book: Book, fileNameFormat?: string, extension = 'md') {
-  let result;
-  if (fileNameFormat) {
-    result = replaceVariableSyntax(book, replaceDateInString(fileNameFormat));
-  } else {
-    result = !book.author ? book.title : `${book.title} - ${book.author}`;
-  }
+export function makeFileName(game: GameEntry, fileNameFormat?: string, extension = 'md') {
+  const result = fileNameFormat ? replaceVariableSyntax(game, replaceDateInString(fileNameFormat)) : game.title;
   return replaceIllegalFileNameCharactersInString(result) + `.${extension}`;
 }
 
-export function changeSnakeCase(book: Book) {
-  return Object.entries(book).reduce((acc, [key, value]) => {
+export function changeSnakeCase(game: GameEntry) {
+  return Object.entries(game).reduce((acc, [key, value]) => {
     acc[camelToSnakeCase(key)] = value;
     return acc;
   }, {});
 }
 
 export function applyDefaultFrontMatter(
-  book: Book,
+  game: GameEntry,
   frontmatter: FrontMatter | string,
   keyType: DefaultFrontmatterKeyType = DefaultFrontmatterKeyType.snakeCase,
 ) {
-  const frontMater = keyType === DefaultFrontmatterKeyType.camelCase ? book : changeSnakeCase(book);
-
+  const frontMatter = keyType === DefaultFrontmatterKeyType.camelCase ? game : changeSnakeCase(game);
   const extraFrontMatter = typeof frontmatter === 'string' ? parseFrontMatter(frontmatter) : frontmatter;
+
   for (const key in extraFrontMatter) {
     const value = extraFrontMatter[key]?.toString().trim() ?? '';
-    if (frontMater[key] && frontMater[key] !== value) {
-      frontMater[key] = `${frontMater[key]}, ${value}`;
+    if (frontMatter[key] && frontMatter[key] !== value) {
+      frontMatter[key] = `${frontMatter[key]}, ${value}`;
     } else {
-      frontMater[key] = value;
+      frontMatter[key] = value;
     }
   }
 
-  return frontMater as object;
+  return frontMatter as object;
 }
 
-export function replaceVariableSyntax(book: Book, text: string): string {
+export function replaceVariableSyntax(game: GameEntry, text: string): string {
   if (!text?.trim()) {
     return '';
   }
 
-  const entries = Object.entries(book);
+  const entries = Object.entries(game);
 
   return entries
-    .reduce((result, [key, val = '']) => {
-      return result.replace(new RegExp(`{{${key}}}`, 'ig'), val);
-    }, text)
+    .reduce((result, [key, val = '']) => result.replace(new RegExp(`{{${key}}}`, 'ig'), String(val)), text)
     .replace(/{{\w+}}/gi, '')
     .trim();
 }

@@ -1,56 +1,53 @@
-import { Book } from '@models/book.model';
-import { BookSearchPluginSettings } from '@settings/settings';
-import { ServiceProvider } from '@src/constants';
+import { GameEntry } from '@models/game.model';
 import { requestUrl } from 'obsidian';
-import { GoogleBooksApi } from './google_books_api';
-import { NaverBooksApi } from './naver_books_api';
 
-export interface BaseBooksApiImpl {
-  getByQuery(query: string, options?: Record<string, string>): Promise<Book[]>;
+export interface GameMetadataApi {
+  getByQuery(query: string): Promise<GameEntry[]>;
 }
 
-class ConfigurationError extends Error {
+export class ConfigurationError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'ConfigurationError';
   }
 }
 
-export function factoryServiceProvider(settings: BookSearchPluginSettings): BaseBooksApiImpl {
-  switch (settings.serviceProvider) {
-    case ServiceProvider.google:
-      return new GoogleBooksApi(settings.localePreference, settings.enableCoverImageEdgeCurl, settings.apiKey);
-    case ServiceProvider.naver:
-      validateNaverSettings(settings);
-      return new NaverBooksApi(settings.naverClientId, settings.naverClientSecret);
-    default:
-      throw new Error('Unsupported service provider.');
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status?: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
   }
 }
 
-function validateNaverSettings(settings: BookSearchPluginSettings): void {
-  if (!settings.naverClientId || !settings.naverClientSecret) {
-    throw new ConfigurationError('네이버 개발자센터에서 "Client ID"와 "Client Secret"를 발급받아 설정해주세요.');
-  }
-}
-
-export async function apiGet<T>(
+export async function apiRequest<T>(
   url: string,
-  params: Record<string, string | number> = {},
-  headers?: Record<string, string>,
+  options: {
+    method?: 'GET' | 'POST';
+    params?: Record<string, string | number>;
+    headers?: Record<string, string>;
+    body?: string;
+  } = {},
 ): Promise<T> {
   const apiURL = new URL(url);
-  appendQueryParams(apiURL, params);
+  appendQueryParams(apiURL, options.params ?? {});
 
   const res = await requestUrl({
     url: apiURL.href,
-    method: 'GET',
+    method: options.method ?? 'GET',
+    body: options.body,
     headers: {
       Accept: '*/*',
       'Content-Type': 'application/json; charset=utf-8',
-      ...headers,
+      ...options.headers,
     },
   });
+
+  if (res.status >= 400) {
+    throw new ApiError(`Request failed with status ${res.status}`, res.status);
+  }
 
   return res.json as T;
 }

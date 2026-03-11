@@ -1,95 +1,90 @@
-import { MarkdownView, Notice, Plugin, TFile, requestUrl } from 'obsidian';
-
-import { BookSearchModal } from '@views/book_search_modal';
-import { BookSuggestModal } from '@views/book_suggest_modal';
+import { MarkdownView, Notice, Plugin, TFile, normalizePath, requestUrl } from 'obsidian';
+import { GameSearchModal } from '@views/game_search_modal';
+import { GameSuggestModal } from '@views/game_suggest_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
-import { Book } from '@models/book.model';
-import { BookSearchSettingTab, BookSearchPluginSettings, DEFAULT_SETTINGS } from '@settings/settings';
+import { GameEntry } from '@models/game.model';
+import { DEFAULT_SETTINGS, GameSearchPluginSettings, GameSearchSettingTab } from '@settings/settings';
 import {
-  getTemplateContents,
   applyTemplateTransformations,
-  useTemplaterPluginInFile,
   executeInlineScriptsTemplates,
+  getTemplateContents,
+  useTemplaterPluginInFile,
 } from '@utils/template';
-import { replaceVariableSyntax, makeFileName, applyDefaultFrontMatter, toStringFrontMatter } from '@utils/utils';
+import { applyDefaultFrontMatter, makeFileName, replaceVariableSyntax, toStringFrontMatter } from '@utils/utils';
 
-export default class BookSearchPlugin extends Plugin {
-  settings: BookSearchPluginSettings;
+export default class GameSearchPlugin extends Plugin {
+  settings: GameSearchPluginSettings;
 
   async onload() {
     await this.loadSettings();
 
-    // This creates an icon in the left ribbon.
-    const ribbonIconEl = this.addRibbonIcon('book', 'Create new book note', () => this.createNewBookNote());
-    // Perform additional things with the ribbon
-    ribbonIconEl.addClass('obsidian-book-search-plugin-ribbon-class');
+    const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote());
+    ribbonIconEl.addClass('obsidian-igdb-game-search-plugin-ribbon-class');
 
-    // This adds a simple command that can be triggered anywhere
     this.addCommand({
-      id: 'open-book-search-modal',
-      name: 'Create new book note',
-      callback: () => this.createNewBookNote(),
+      id: 'open-game-search-modal',
+      name: 'Create new game note',
+      callback: () => this.createNewGameNote(),
     });
 
     this.addCommand({
-      id: 'open-book-search-modal-to-insert',
+      id: 'open-game-search-modal-to-insert',
       name: 'Insert the metadata',
       callback: () => this.insertMetadata(),
     });
 
-    // This adds a settings tab so the user can configure various aspects of the plugin
-    this.addSettingTab(new BookSearchSettingTab(this.app, this));
-
-    console.log(`Book Search: version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`);
+    this.addSettingTab(new GameSearchSettingTab(this.app, this));
+    console.log(
+      `IGDB Game Search: version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`,
+    );
   }
 
   showNotice(message: unknown) {
     try {
       new Notice(message?.toString());
     } catch {
-      // eslint-disable
+      // noop
     }
   }
 
-  // open modal for book search
-  async searchBookMetadata(query?: string): Promise<Book> {
-    const searchedBooks = await this.openBookSearchModal(query);
-    return await this.openBookSuggestModal(searchedBooks);
+  async searchGameMetadata(query?: string): Promise<GameEntry> {
+    const searchedGames = await this.openGameSearchModal(query);
+    return await this.openGameSuggestModal(searchedGames);
   }
 
-  async getRenderedContents(book: Book) {
+  async getRenderedContents(game: GameEntry) {
     const {
       templateFile,
       useDefaultFrontmatter,
       defaultFrontmatterKeyType,
       enableCoverImageSave,
       coverImagePath,
-      frontmatter, // @deprecated
-      content, // @deprecated
+      frontmatter,
+      content,
     } = this.settings;
 
     let contentBody = '';
 
     if (enableCoverImageSave) {
-      const coverImageUrl = book.coverLargeUrl || book.coverMediumUrl || book.coverSmallUrl || book.coverUrl;
+      const coverImageUrl = game.coverLargeUrl || game.coverUrl || game.coverSmallUrl;
       if (coverImageUrl) {
-        const imageName = makeFileName(book, this.settings.fileNameFormat, 'jpg');
-        book.localCoverImage = await this.downloadAndSaveImage(imageName, coverImagePath, coverImageUrl);
+        const imageName = makeFileName(game, this.settings.fileNameFormat, 'jpg');
+        game.localCoverImage = await this.downloadAndSaveImage(imageName, coverImagePath, coverImageUrl);
       }
     }
 
     if (templateFile) {
       const templateContents = await getTemplateContents(this.app, templateFile);
-      const replacedVariable = replaceVariableSyntax(book, applyTemplateTransformations(templateContents));
-      contentBody += executeInlineScriptsTemplates(book, replacedVariable);
+      const replacedVariable = replaceVariableSyntax(game, applyTemplateTransformations(templateContents));
+      contentBody += executeInlineScriptsTemplates(game, replacedVariable);
     } else {
-      let replacedVariableFrontmatter = replaceVariableSyntax(book, frontmatter); // @deprecated
+      let replacedVariableFrontmatter = replaceVariableSyntax(game, frontmatter);
       if (useDefaultFrontmatter) {
         replacedVariableFrontmatter = toStringFrontMatter(
-          applyDefaultFrontMatter(book, replacedVariableFrontmatter, defaultFrontmatterKeyType),
+          applyDefaultFrontMatter(game, replacedVariableFrontmatter, defaultFrontmatterKeyType),
         );
       }
-      const replacedVariableContent = replaceVariableSyntax(book, content);
+      const replacedVariableContent = replaceVariableSyntax(game, content);
       contentBody += replacedVariableFrontmatter
         ? `---\n${replacedVariableFrontmatter}\n---\n${replacedVariableContent}`
         : replacedVariableContent;
@@ -99,14 +94,11 @@ export default class BookSearchPlugin extends Plugin {
   }
 
   async downloadAndSaveImage(imageName: string, directory: string, imageUrl: string): Promise<string> {
-    const { enableCoverImageSave } = this.settings;
-    if (!enableCoverImageSave) {
-      console.warn('Cover image saving is not enabled.');
+    if (!this.settings.enableCoverImageSave) {
       return '';
     }
 
     try {
-      // Use Obsidian's requestUrl method to fetch the image data:
       const response = await requestUrl({
         url: imageUrl,
         method: 'GET',
@@ -120,7 +112,8 @@ export default class BookSearchPlugin extends Plugin {
       }
 
       const imageData = response.arrayBuffer;
-      const filePath = `${directory}/${imageName}`;
+      const normalizedDirectory = normalizePath(directory);
+      const filePath = normalizedDirectory ? `${normalizedDirectory}/${imageName}` : imageName;
       await this.app.vault.adapter.writeBinary(filePath, imageData);
       return filePath;
     } catch (error) {
@@ -137,15 +130,14 @@ export default class BookSearchPlugin extends Plugin {
         return;
       }
 
-      // TODO: Try using a search query on the selected text
-      const book = await this.searchBookMetadata(markdownView.file.basename);
+      const game = await this.searchGameMetadata(markdownView.file.basename);
 
       if (!markdownView.editor) {
         console.warn('Can not find editor from the active markdown view');
         return;
       }
 
-      const renderedContents = await this.getRenderedContents(book);
+      const renderedContents = await this.getRenderedContents(game);
       markdownView.editor.replaceRange(renderedContents, { line: 0, ch: 0 });
     } catch (err) {
       console.warn(err);
@@ -153,30 +145,26 @@ export default class BookSearchPlugin extends Plugin {
     }
   }
 
-  async createNewBookNote(): Promise<void> {
+  async createNewGameNote(): Promise<void> {
     try {
-      const book = await this.searchBookMetadata();
-      const renderedContents = await this.getRenderedContents(book);
+      const game = await this.searchGameMetadata();
+      const renderedContents = await this.getRenderedContents(game);
 
-      // TODO: If the same file exists, it asks if you want to overwrite it.
-      // create new File
-      const fileName = makeFileName(book, this.settings.fileNameFormat);
-      const filePath = `${this.settings.folder}/${fileName}`;
+      const fileName = makeFileName(game, this.settings.fileNameFormat);
+      const filePath = this.settings.folder ? `${this.settings.folder}/${fileName}` : fileName;
       const targetFile = await this.app.vault.create(filePath, renderedContents);
 
-      // if use Templater plugin
       await useTemplaterPluginInFile(this.app, targetFile);
-      this.openNewBookNote(targetFile);
+      await this.openNewGameNote(targetFile);
     } catch (err) {
       console.warn(err);
       this.showNotice(err);
     }
   }
 
-  async openNewBookNote(targetFile: TFile) {
+  async openNewGameNote(targetFile: TFile) {
     if (!this.settings.openPageOnCompletion) return;
 
-    // open file
     const activeLeaf = this.app.workspace.getLeaf();
     if (!activeLeaf) {
       console.warn('No active leaf');
@@ -185,22 +173,21 @@ export default class BookSearchPlugin extends Plugin {
 
     await activeLeaf.openFile(targetFile, { state: { mode: 'source' } });
     activeLeaf.setEphemeralState({ rename: 'all' });
-    // cursor focus
     await new CursorJumper(this.app).jumpToNextCursorLocation();
   }
 
-  async openBookSearchModal(query = ''): Promise<Book[]> {
+  async openGameSearchModal(query = ''): Promise<GameEntry[]> {
     return new Promise((resolve, reject) => {
-      return new BookSearchModal(this, query, (error, results) => {
+      return new GameSearchModal(this, query, (error, results) => {
         return error ? reject(error) : resolve(results);
       }).open();
     });
   }
 
-  async openBookSuggestModal(books: Book[]): Promise<Book> {
+  async openGameSuggestModal(games: GameEntry[]): Promise<GameEntry> {
     return new Promise((resolve, reject) => {
-      return new BookSuggestModal(this.app, this.settings.showCoverImageInSearch, books, (error, selectedBook) => {
-        return error ? reject(error) : resolve(selectedBook);
+      return new GameSuggestModal(this.app, this.settings.showCoverImageInSearch, games, (error, selectedGame) => {
+        return error ? reject(error) : resolve(selectedGame);
       }).open();
     });
   }

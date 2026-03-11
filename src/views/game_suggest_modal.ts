@@ -1,0 +1,52 @@
+import { App, SuggestModal } from 'obsidian';
+import { GameEntry } from '@models/game.model';
+
+export class GameSuggestModal extends SuggestModal<GameEntry> {
+  constructor(
+    app: App,
+    private readonly showCoverImageInSearch: boolean,
+    private readonly suggestion: GameEntry[],
+    private readonly onChoose: (error: Error | null, result?: GameEntry) => void,
+  ) {
+    super(app);
+  }
+
+  getSuggestions(query: string): GameEntry[] {
+    const searchQuery = query.toLowerCase();
+    return this.suggestion.filter(game => {
+      return (
+        game.title?.toLowerCase().includes(searchQuery) ||
+        game.platform?.toLowerCase().includes(searchQuery) ||
+        game.developer?.toLowerCase().includes(searchQuery) ||
+        game.publisher?.toLowerCase().includes(searchQuery)
+      );
+    });
+  }
+
+  renderSuggestion(game: GameEntry, el: HTMLElement) {
+    el.addClass('game-suggestion-item');
+
+    const coverImageUrl = game.coverLargeUrl || game.coverUrl || game.coverSmallUrl;
+    if (this.showCoverImageInSearch && coverImageUrl) {
+      el.createEl('img', {
+        cls: 'game-cover-image',
+        attr: {
+          src: coverImageUrl,
+          alt: `Cover Image for ${game.title}`,
+        },
+      });
+    }
+
+    const textContainer = el.createEl('div', { cls: 'game-text-info' });
+    textContainer.createEl('div', { text: game.title });
+
+    const releaseYear = game.releaseYear ? `(${game.releaseYear})` : '';
+    const platform = game.platform ? ` ${game.platform}` : '';
+    const developer = game.developer ? `, ${game.developer}` : '';
+    textContainer.createEl('small', { text: `${releaseYear}${platform}${developer}`.trim() });
+  }
+
+  onChooseSuggestion(game: GameEntry) {
+    this.onChoose(null, game);
+  }
+}
