@@ -1,5 +1,6 @@
 # IGDB Game Search
 
+[![Japanese](https://img.shields.io/badge/Language-%E6%97%A5%E6%9C%AC%E8%AA%9E-blueviolet)](README.ja.md)
 [![Korean](https://img.shields.io/badge/Language-%ED%95%9C%EA%B5%AD%EC%96%B4-blueviolet)](README.ko.md)
 
 Easily create game notes from IGDB.
