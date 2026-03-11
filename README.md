@@ -56,16 +56,20 @@ Currently, install it manually:
 
 ## How to get Twitch Client ID and Client Secret
 
-1. Open the Twitch Developer Console: https://dev.twitch.tv/console
-2. Sign in with your Twitch account.
-3. Create or register an application.
-4. Copy the generated `Client ID`.
-5. Generate a new `Client Secret`.
-6. Paste both values into the plugin settings in Obsidian.
-
-If Twitch asks for a redirect URL while creating the app, enter any valid URL you control, such as `http://localhost`, if you only use this plugin locally.
+1. Create a Twitch account if you do not already have one.
+2. Enable Two Factor Authentication on your Twitch account.
+3. Open the Twitch Developer Portal: https://dev.twitch.tv/console
+4. Register a new application.
+5. If Twitch asks for an OAuth Redirect URL, add `localhost` to continue.
+6. Set the Client Type to `Confidential` so Twitch can generate a Client Secret.
+7. Open the newly created application settings.
+8. Generate a Client Secret by pressing `New Secret`.
+9. Copy both the `Client ID` and `Client Secret`.
+10. Paste them into the plugin settings in Obsidian.
 
 For IGDB API details, see the official docs: https://api-docs.igdb.com
+
+The IGDB API is free for non-commercial use under the Twitch Developer Service Agreement.
 
 <br>
 

@@ -58,16 +58,20 @@ https://github.com/user-attachments/assets/e19ee2d0-1c84-4092-87d9-ee2f84b636d1
 
 ## Twitch Client ID / Client Secret の取得方法
 
-1. Twitch Developer Console を開きます: https://dev.twitch.tv/console
-2. Twitch アカウントでログインします。
-3. アプリケーションを新規作成または登録します。
-4. 発行された `Client ID` をコピーします。
-5. `Client Secret` を新しく発行します。
-6. Obsidian のプラグイン設定に両方を貼り付けます。
-
-アプリ登録時に Redirect URL を求められた場合は、ローカル利用であれば `http://localhost` のような有効な URL を指定すれば十分です。
+1. まだ持っていない場合は、Twitch アカウントを作成します。
+2. Twitch アカウントで二要素認証を有効にします。
+3. Twitch Developer Portal を開きます: https://dev.twitch.tv/console
+4. 新しいアプリケーションを登録します。
+5. OAuth Redirect URL を求められたら、`localhost` を追加して進みます。
+6. Client Type は `Confidential` に設定します。これを選ばないと Client Secret を生成できません。
+7. 作成したアプリケーションの管理画面を開きます。
+8. `New Secret` を押して Client Secret を生成します。
+9. `Client ID` と `Client Secret` の両方を控えます。
+10. Obsidian のプラグイン設定に両方を貼り付けます。
 
 IGDB API の詳細は公式ドキュメントを参照してください: https://api-docs.igdb.com
+
+IGDB API は、Twitch Developer Service Agreement の条件のもとで、非商用利用については無料です。
 
 <br>
 
