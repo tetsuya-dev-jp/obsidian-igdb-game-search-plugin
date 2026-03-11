@@ -19,7 +19,7 @@ export default class GameSearchPlugin extends Plugin {
     await this.loadSettings();
 
     const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote());
-    ribbonIconEl.addClass('obsidian-igdb-game-search-plugin-ribbon-class');
+    ribbonIconEl.addClass('igdb-game-search-ribbon-class');
 
     this.addCommand({
       id: 'open-game-search-modal',

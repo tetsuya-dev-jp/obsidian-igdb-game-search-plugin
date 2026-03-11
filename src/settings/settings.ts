@@ -5,7 +5,7 @@ import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
 import { FileSuggest } from './suggesters/FileSuggester';
 import { FolderSuggest } from './suggesters/FolderSuggester';
 
-const docUrl = 'https://github.com/tetsuya-dev-jp/obsidian-igdb-game-search-plugin';
+const docUrl = 'https://github.com/tetsuya-dev-jp/igdb-game-search';
 
 export enum DefaultFrontmatterKeyType {
   snakeCase = 'Snake Case',

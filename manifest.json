@@ -1,5 +1,5 @@
 {
-	"id": "obsidian-igdb-game-search-plugin",
+	"id": "igdb-game-search",
 	"name": "IGDB Game Search",
 	"version": "0.1.0",
 	"minAppVersion": "0.15.0",

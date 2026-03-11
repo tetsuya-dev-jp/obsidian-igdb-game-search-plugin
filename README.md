@@ -27,7 +27,7 @@ Use IGDB API to get the game metadata.
 
 Currently, install it manually:
 
-1. Create `VaultFolder/.obsidian/plugins/obsidian-igdb-game-search-plugin/`.
+1. Create `VaultFolder/.obsidian/plugins/igdb-game-search/`.
 2. Copy `manifest.json`, `main.js`, and `styles.css` into the folder.
 3. Reload Obsidian.
 4. Enable `IGDB Game Search` in Community plugins.

@@ -27,7 +27,7 @@ https://github.com/user-attachments/assets/e19ee2d0-1c84-4092-87d9-ee2f84b636d1
 
 현재는 수동 설치 방식입니다.
 
-1. `VaultFolder/.obsidian/plugins/obsidian-igdb-game-search-plugin/` 폴더를 만듭니다.
+1. `VaultFolder/.obsidian/plugins/igdb-game-search/` 폴더를 만듭니다.
 2. `manifest.json`, `main.js`, `styles.css` 를 해당 폴더에 복사합니다.
 3. Obsidian을 다시 불러옵니다.
 4. Community plugins에서 `IGDB Game Search` 를 활성화합니다.
