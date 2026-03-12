@@ -89,7 +89,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
           console.error(error);
         }
 
-        cb.setPlaceholder('Example: Games')
+        cb.setPlaceholder('Example: games')
           .setValue(this.plugin.settings.folder)
           .onChange(async value => {
             this.plugin.settings.folder = value.trim();
@@ -134,7 +134,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
     const templateFileDesc = document.createDocumentFragment();
     templateFileDesc.createDiv({ text: 'Files will be available as templates.' });
     templateFileDesc.createEl('a', {
-      text: 'Example Template',
+      text: 'Example template',
       href: `${docUrl}#example-template`,
     });
 
@@ -148,7 +148,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
           console.error(error);
         }
 
-        cb.setPlaceholder('Example: Templates/game-note')
+        cb.setPlaceholder('Example: templates/game-note')
           .setValue(this.plugin.settings.templateFile)
           .onChange(async value => {
             this.plugin.settings.templateFile = value.trim();
@@ -162,7 +162,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Twitch client ID')
-      .setDesc('Used to request an IGDB app access token.')
+      .setDesc('Used to request an access token for game metadata.')
       .addText(text =>
         text.setValue(this.plugin.settings.twitchClientId).onChange(async value => {
           this.plugin.settings.twitchClientId = value.trim();
@@ -174,7 +174,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Twitch client secret')
-      .setDesc('Stored locally in plugin data and used to refresh the IGDB token.')
+      .setDesc('Stored locally in plugin data and used to refresh the access token.')
       .addText(text => {
         text.inputEl.type = 'password';
         text.setValue(this.plugin.settings.twitchClientSecret).onChange(async value => {
@@ -191,7 +191,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Show cover images in search')
-      .setDesc('Display IGDB cover art in the suggestion list.')
+      .setDesc('Display cover art in the suggestion list.')
       .addToggle(toggle =>
         toggle.setValue(this.plugin.settings.showCoverImageInSearch).onChange(async value => {
           this.plugin.settings.showCoverImageInSearch = value;

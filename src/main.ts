@@ -70,7 +70,11 @@ export default class GameSearchPlugin extends Plugin {
       }
     }
 
-    return String(message);
+    if (typeof message === 'number' || typeof message === 'boolean' || typeof message === 'bigint') {
+      return `${message}`;
+    }
+
+    return 'An unexpected error occurred.';
   }
 
   showNotice(message: unknown): void {
