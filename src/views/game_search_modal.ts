@@ -21,19 +21,25 @@ export class GameSearchModal extends Modal {
 
   onOpen(): void {
     const { contentEl } = this;
-    contentEl.createEl('h2', { text: 'Search Game' });
+    contentEl.createEl('h2', { text: 'Search game' });
     contentEl.createDiv({ cls: 'game-search-plugin__search-modal--input' }, el => {
       new TextComponent(el)
         .setValue(this.query)
         .setPlaceholder('Search by game title')
         .onChange(value => (this.query = value))
-        .inputEl.addEventListener('keydown', event => event.key === 'Enter' && !event.isComposing && this.searchGame());
+        .inputEl.addEventListener('keydown', event => {
+          if (event.key === 'Enter' && !event.isComposing) {
+            void this.searchGame();
+          }
+        });
     });
     new Setting(this.contentEl).addButton(btn => {
       this.okBtnRef = btn
         .setButtonText(this.SEARCH_BUTTON_TEXT)
         .setCta()
-        .onClick(() => this.searchGame());
+        .onClick(() => {
+          void this.searchGame();
+        });
     });
   }
 

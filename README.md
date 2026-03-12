@@ -159,10 +159,6 @@ updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
 ## Storyline
 
 {{storyline}}
-
-## Screenshots
-
-<%= game.screenshots?.map((url) => `![screenshot](${url})`).join('\n') ?? '' %>
 ```
 
 <br>
@@ -217,18 +213,11 @@ Write `{{name}}` in your template and replace `name` with the desired field.
 
 ## Advanced
 
-### Inline Script
+### Templater
 
-- The object `game` gives access to all attributes managed by the plugin.
-- Use `<%= game %>` or `<%= JSON.stringify(game, null, 2) %>` to inspect the object in a template.
-
-Example:
-
-````md
-```json
-<%= JSON.stringify(game, null, 2) %>
-```
-````
+- This plugin replaces `{{variables}}` and date placeholders, but it no longer executes custom `<%= ... %>` expressions.
+- Use the Templater plugin for loops, conditions, or any other scripting inside templates.
+- If you want to render screenshots or add conditional sections, use Templater on top of the generated metadata.
 
 ## Acknowledgements
 

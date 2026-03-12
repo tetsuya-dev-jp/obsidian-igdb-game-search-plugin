@@ -4,44 +4,78 @@ import { GameSuggestModal } from '@views/game_suggest_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
 import { GameEntry } from '@models/game.model';
 import { DEFAULT_SETTINGS, GameSearchPluginSettings, GameSearchSettingTab } from '@settings/settings';
-import {
-  applyTemplateTransformations,
-  executeInlineScriptsTemplates,
-  getTemplateContents,
-  useTemplaterPluginInFile,
-} from '@utils/template';
+import { applyTemplateTransformations, getTemplateContents, useTemplaterPluginInFile } from '@utils/template';
 import { applyDefaultFrontMatter, makeFileName, replaceVariableSyntax, toStringFrontMatter } from '@utils/utils';
 
 export default class GameSearchPlugin extends Plugin {
   settings: GameSearchPluginSettings;
 
-  async onload() {
-    await this.loadSettings();
-
-    const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => this.createNewGameNote());
-    ribbonIconEl.addClass('igdb-game-search-ribbon-class');
-
-    this.addCommand({
-      id: 'open-game-search-modal',
-      name: 'Create new game note',
-      callback: () => this.createNewGameNote(),
-    });
-
-    this.addCommand({
-      id: 'open-game-search-modal-to-insert',
-      name: 'Insert the metadata',
-      callback: () => this.insertMetadata(),
-    });
-
-    this.addSettingTab(new GameSearchSettingTab(this.app, this));
-    console.log(
-      `IGDB Game Search: version ${this.manifest.version} (requires obsidian ${this.manifest.minAppVersion})`,
-    );
+  onload(): void {
+    void this.initialize();
   }
 
-  showNotice(message: unknown) {
+  private async initialize(): Promise<void> {
     try {
-      new Notice(message?.toString());
+      await this.loadSettings();
+
+      const ribbonIconEl = this.addRibbonIcon('gamepad-2', 'Create new game note', () => {
+        void this.createNewGameNote();
+      });
+      ribbonIconEl.addClass('igdb-game-search-ribbon-class');
+
+      this.addCommand({
+        id: 'open-game-search-modal',
+        name: 'Create new game note',
+        callback: () => {
+          void this.createNewGameNote();
+        },
+      });
+
+      this.addCommand({
+        id: 'open-game-search-modal-to-insert',
+        name: 'Insert metadata',
+        callback: () => {
+          void this.insertMetadata();
+        },
+      });
+
+      this.addSettingTab(new GameSearchSettingTab(this.app, this));
+      console.debug(
+        `IGDB Game Search loaded: version ${this.manifest.version} (requires ${this.manifest.minAppVersion})`,
+      );
+    } catch (error) {
+      console.error('Failed to initialize IGDB Game Search', error);
+      this.showNotice(error);
+    }
+  }
+
+  private toNoticeMessage(message: unknown): string {
+    if (message instanceof Error) {
+      return message.message || 'An unexpected error occurred.';
+    }
+
+    if (typeof message === 'string') {
+      return message;
+    }
+
+    if (message === null || message === undefined) {
+      return 'An unexpected error occurred.';
+    }
+
+    if (typeof message === 'object') {
+      try {
+        return JSON.stringify(message);
+      } catch {
+        return 'An unexpected error occurred.';
+      }
+    }
+
+    return String(message);
+  }
+
+  showNotice(message: unknown): void {
+    try {
+      new Notice(this.toNoticeMessage(message));
     } catch {
       // noop
     }
@@ -49,7 +83,7 @@ export default class GameSearchPlugin extends Plugin {
 
   async searchGameMetadata(query?: string): Promise<GameEntry> {
     const searchedGames = await this.openGameSearchModal(query);
-    return await this.openGameSuggestModal(searchedGames);
+    return this.openGameSuggestModal(searchedGames);
   }
 
   async getRenderedContents(game: GameEntry) {
@@ -75,8 +109,7 @@ export default class GameSearchPlugin extends Plugin {
 
     if (templateFile) {
       const templateContents = await getTemplateContents(this.app, templateFile);
-      const replacedVariable = replaceVariableSyntax(game, applyTemplateTransformations(templateContents));
-      contentBody += executeInlineScriptsTemplates(game, replacedVariable);
+      contentBody += replaceVariableSyntax(game, applyTemplateTransformations(templateContents));
     } else {
       let replacedVariableFrontmatter = replaceVariableSyntax(game, frontmatter);
       if (useDefaultFrontmatter) {
@@ -178,17 +211,24 @@ export default class GameSearchPlugin extends Plugin {
 
   async openGameSearchModal(query = ''): Promise<GameEntry[]> {
     return new Promise((resolve, reject) => {
-      return new GameSearchModal(this, query, (error, results) => {
+      const modal = new GameSearchModal(this, query, (error, results) => {
         return error ? reject(error) : resolve(results);
-      }).open();
+      });
+      modal.open();
     });
   }
 
   async openGameSuggestModal(games: GameEntry[]): Promise<GameEntry> {
     return new Promise((resolve, reject) => {
-      return new GameSuggestModal(this.app, this.settings.showCoverImageInSearch, games, (error, selectedGame) => {
-        return error ? reject(error) : resolve(selectedGame);
-      }).open();
+      const modal = new GameSuggestModal(
+        this.app,
+        this.settings.showCoverImageInSearch,
+        games,
+        (error, selectedGame) => {
+          return error ? reject(error) : resolve(selectedGame);
+        },
+      );
+      modal.open();
     });
   }
 

@@ -161,10 +161,6 @@ updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
 ## Storyline
 
 {{storyline}}
-
-## Screenshots
-
-<%= game.screenshots?.map((url) => `![screenshot](${url})`).join('\n') ?? '' %>
 ```
 
 <br>
@@ -219,18 +215,11 @@ updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
 
 ## Advanced
 
-### Inline Script
+### Templater
 
-- `game` オブジェクトから、プラグインが取得したすべての属性にアクセスできます。
-- `<%= game %>` や `<%= JSON.stringify(game, null, 2) %>` で中身を確認できます。
-
-例:
-
-````md
-```json
-<%= JSON.stringify(game, null, 2) %>
-```
-````
+- このプラグインは `{{variables}}` と日付プレースホルダーは置換しますが、`<%= ... %>` のような独自式は実行しません。
+- ループや条件分岐などのテンプレート処理をしたい場合は Templater を使ってください。
+- スクリーンショットの埋め込みや条件付き表示をしたい場合は、生成されたメタデータに Templater を重ねて使ってください。
 
 ## Acknowledgements
 

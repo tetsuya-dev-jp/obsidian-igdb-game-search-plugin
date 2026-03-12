@@ -4,7 +4,7 @@ import { IgdbApi } from './igdb_api';
 import { IgdbGame } from './models/igdb_response';
 
 describe('IgdbApi', () => {
-  const saveSettings = jest.fn(async () => undefined);
+  const saveSettings = jest.fn(() => Promise.resolve());
 
   const settings: GameSearchPluginSettings = {
     folder: '',

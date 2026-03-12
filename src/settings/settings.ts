@@ -69,15 +69,13 @@ export class GameSearchSettingTab extends PluginSettingTab {
   }
 
   private createGeneralSettings(containerEl: HTMLElement) {
-    this.createHeader('General Settings', containerEl);
+    this.createHeader('General settings', containerEl);
     this.createFileLocationSetting(containerEl);
     this.createFileNameFormatSetting(containerEl);
   }
 
-  private createHeader(title: string, containerEl: HTMLElement) {
-    const header = document.createDocumentFragment();
-    header.createEl('h2', { text: title });
-    return new Setting(containerEl).setHeading().setName(header);
+  private createHeader(title: string, containerEl: HTMLElement): void {
+    new Setting(containerEl).setName(title).setHeading();
   }
 
   private createFileLocationSetting(containerEl: HTMLElement) {
@@ -101,7 +99,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
   }
 
   private createFileNameFormatSetting(containerEl: HTMLElement) {
-    const previewEl = document.createDocumentFragment().createEl('code', {
+    const previewEl = createEl('code', {
       text: replaceDateInString(this.plugin.settings.fileNameFormat) || '{{title}}',
     });
 
@@ -120,7 +118,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.fileNameFormat)
           .onChange(async value => {
             this.plugin.settings.fileNameFormat = value.trim();
-            previewEl.innerHTML = replaceDateInString(value) || '{{title}}';
+            previewEl.setText(replaceDateInString(value) || '{{title}}');
             await this.plugin.saveSettings();
           });
       });
@@ -160,10 +158,10 @@ export class GameSearchSettingTab extends PluginSettingTab {
   }
 
   private createIgdbSettings(containerEl: HTMLElement) {
-    this.createHeader('IGDB Authentication', containerEl);
+    this.createHeader('IGDB authentication', containerEl);
 
     new Setting(containerEl)
-      .setName('Twitch Client ID')
+      .setName('Twitch client ID')
       .setDesc('Used to request an IGDB app access token.')
       .addText(text =>
         text.setValue(this.plugin.settings.twitchClientId).onChange(async value => {
@@ -175,7 +173,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Twitch Client Secret')
+      .setName('Twitch client secret')
       .setDesc('Stored locally in plugin data and used to refresh the IGDB token.')
       .addText(text => {
         text.inputEl.type = 'password';
@@ -189,7 +187,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
   }
 
   private createSearchSettings(containerEl: HTMLElement) {
-    this.createHeader('Search Experience', containerEl);
+    this.createHeader('Search experience', containerEl);
 
     new Setting(containerEl)
       .setName('Show cover images in search')
@@ -203,7 +201,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
   }
 
   private createNoteSettings(containerEl: HTMLElement) {
-    this.createHeader('Note Creation', containerEl);
+    this.createHeader('Note creation', containerEl);
 
     new Setting(containerEl)
       .setName('Open new game note')
