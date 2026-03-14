@@ -22,6 +22,9 @@ describe('IgdbApi', () => {
     showCoverImageInSearch: false,
     enableCoverImageSave: false,
     coverImagePath: '',
+    enableTranslation: false,
+    translationTargetLanguage: 'auto',
+    deeplApiKey: '',
   };
 
   beforeEach(() => {

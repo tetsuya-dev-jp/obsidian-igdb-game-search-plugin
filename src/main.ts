@@ -4,6 +4,7 @@ import { GameSuggestModal } from '@views/game_suggest_modal';
 import { CursorJumper } from '@utils/cursor_jumper';
 import { GameEntry } from '@models/game.model';
 import { DEFAULT_SETTINGS, GameSearchPluginSettings, GameSearchSettingTab } from '@settings/settings';
+import { DeepLApi } from '@apis/deepl_api';
 import { applyTemplateTransformations, getTemplateContents, useTemplaterPluginInFile } from '@utils/template';
 import { applyDefaultFrontMatter, makeFileName, replaceVariableSyntax, toStringFrontMatter } from '@utils/utils';
 
@@ -91,6 +92,7 @@ export default class GameSearchPlugin extends Plugin {
   }
 
   async getRenderedContents(game: GameEntry) {
+    const localizedGame = await this.translateGameEntry(game);
     const {
       templateFile,
       useDefaultFrontmatter,
@@ -104,30 +106,40 @@ export default class GameSearchPlugin extends Plugin {
     let contentBody = '';
 
     if (enableCoverImageSave) {
-      const coverImageUrl = game.coverLargeUrl || game.coverUrl || game.coverSmallUrl;
+      const coverImageUrl = localizedGame.coverLargeUrl || localizedGame.coverUrl || localizedGame.coverSmallUrl;
       if (coverImageUrl) {
-        const imageName = makeFileName(game, this.settings.fileNameFormat, 'jpg');
-        game.localCoverImage = await this.downloadAndSaveImage(imageName, coverImagePath, coverImageUrl);
+        const imageName = makeFileName(localizedGame, this.settings.fileNameFormat, 'jpg');
+        localizedGame.localCoverImage = await this.downloadAndSaveImage(imageName, coverImagePath, coverImageUrl);
       }
     }
 
     if (templateFile) {
       const templateContents = await getTemplateContents(this.app, templateFile);
-      contentBody += replaceVariableSyntax(game, applyTemplateTransformations(templateContents));
+      contentBody += replaceVariableSyntax(localizedGame, applyTemplateTransformations(templateContents));
     } else {
-      let replacedVariableFrontmatter = replaceVariableSyntax(game, frontmatter);
+      let replacedVariableFrontmatter = replaceVariableSyntax(localizedGame, frontmatter);
       if (useDefaultFrontmatter) {
         replacedVariableFrontmatter = toStringFrontMatter(
-          applyDefaultFrontMatter(game, replacedVariableFrontmatter, defaultFrontmatterKeyType),
+          applyDefaultFrontMatter(localizedGame, replacedVariableFrontmatter, defaultFrontmatterKeyType),
         );
       }
-      const replacedVariableContent = replaceVariableSyntax(game, content);
+      const replacedVariableContent = replaceVariableSyntax(localizedGame, content);
       contentBody += replacedVariableFrontmatter
         ? `---\n${replacedVariableFrontmatter}\n---\n${replacedVariableContent}`
         : replacedVariableContent;
     }
 
     return contentBody;
+  }
+
+  private async translateGameEntry(game: GameEntry): Promise<GameEntry> {
+    try {
+      return await new DeepLApi(this.settings).translateGameEntry(game);
+    } catch (error) {
+      console.warn('Failed to translate game metadata', error);
+      this.showNotice(error);
+      return game;
+    }
   }
 
   async downloadAndSaveImage(imageName: string, directory: string, imageUrl: string): Promise<string> {

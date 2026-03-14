@@ -105,6 +105,16 @@ IGDB API は、Twitch Developer Service Agreement の条件のもとで、非商
 
 設定しない場合は、プラグインの標準メタデータ出力が使われます。
 
+### Translation
+
+DeepL を使って、ノートへ書き込む前に長文フィールドを翻訳できます。
+
+翻訳対象は `summary` と `storyline` のみです。ジャンル名、プラットフォーム名、会社名などの短いメタデータは IGDB の原文のまま保持します。
+
+翻訳先言語を `Auto` にすると、現在の Obsidian の言語設定に追従します。
+
+翻訳に失敗した場合は、英語の原文をそのまま使ってノート作成を継続します。
+
 ### Show cover images in search
 
 検索結果に IGDB のカバー画像を表示します。
@@ -132,25 +142,25 @@ IGDB API は、Twitch Developer Service Agreement の条件のもとで、非商
 ```md
 ---
 type: game
-title: "{{title}}"
-aliases: "{{alternativeTitle}}"
-platforms: "{{platform}}"
-genres: "{{genre}}"
-developers: "{{developer}}"
-publishers: "{{publisher}}"
-franchise: "{{franchise}}"
-collection: "{{collection}}"
-released: "{{firstReleaseDate}}"
-year: "{{releaseYear}}"
-rating: "{{totalRating}}"
-igdb: "{{igdbUrl}}"
-cover: "{{coverLargeUrl}}"
-localCover: "{{localCoverImage}}"
-created: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
-updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
+title: '{{title}}'
+aliases: '{{alternativeTitle}}'
+platforms: '{{platform}}'
+genres: '{{genre}}'
+developers: '{{developer}}'
+publishers: '{{publisher}}'
+franchise: '{{franchise}}'
+collection: '{{collection}}'
+released: '{{firstReleaseDate}}'
+year: '{{releaseYear}}'
+rating: '{{totalRating}}'
+igdb: '{{igdbUrl}}'
+cover: '{{coverLargeUrl}}'
+localCover: '{{localCoverImage}}'
+created: '{{DATE:YYYY-MM-DD HH:mm:ss}}'
+updated: '{{DATE:YYYY-MM-DD HH:mm:ss}}'
 ---
 
-<%* if (tp.frontmatter.cover && tp.frontmatter.cover.trim() !== "") { tR += `![cover|200](${tp.frontmatter.cover})` } %>
+<%\* if (tp.frontmatter.cover && tp.frontmatter.cover.trim() !== "") { tR += `![cover|200](${tp.frontmatter.cover})` } %>
 
 # {{title}}
 
@@ -169,47 +179,47 @@ updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
 
 テンプレート内では `{{name}}` の形で変数を書き、`name` を必要なフィールド名に置き換えて使います。
 
-| Field | Description |
-| --- | --- |
-| `title` | ゲームタイトル |
-| `alternativeTitle` | 代替タイトルのカンマ区切り文字列 |
-| `alternativeTitles` | 代替タイトルの配列 |
-| `slug` | IGDB の slug |
-| `summary` | ゲーム概要 |
-| `storyline` | ストーリー説明 |
-| `igdbUrl` | IGDB ページ URL |
-| `website` | Web サイト URL のカンマ区切り文字列 |
-| `websites` | Web サイト URL の配列 |
-| `platform` | プラットフォーム名のカンマ区切り文字列 |
-| `platforms` | プラットフォーム名の配列 |
-| `genre` | ジャンル名のカンマ区切り文字列 |
-| `genres` | ジャンル名の配列 |
-| `theme` | テーマ名のカンマ区切り文字列 |
-| `themes` | テーマ名の配列 |
-| `gameMode` | ゲームモード名のカンマ区切り文字列 |
-| `gameModes` | ゲームモード名の配列 |
-| `playerPerspective` | 視点名のカンマ区切り文字列 |
-| `playerPerspectives` | 視点名の配列 |
-| `developer` | 開発会社名のカンマ区切り文字列 |
-| `developers` | 開発会社名の配列 |
-| `publisher` | 販売会社名のカンマ区切り文字列 |
-| `publishers` | 販売会社名の配列 |
-| `franchise` | 最初のフランチャイズ名 |
-| `collection` | 最初のコレクション名 |
-| `firstReleaseDate` | `YYYY-MM-DD` 形式の発売日 |
-| `releaseYear` | 発売年 |
-| `rating` | IGDB の rating |
-| `ratingCount` | rating 件数 |
-| `aggregatedRating` | aggregated rating |
-| `aggregatedRatingCount` | aggregated rating 件数 |
-| `totalRating` | total rating |
-| `totalRatingCount` | total rating 件数 |
-| `coverUrl` | カバー画像 URL |
-| `coverSmallUrl` | 小さいカバー画像 URL |
-| `coverLargeUrl` | 大きいカバー画像 URL |
-| `screenshot` | スクリーンショット URL のカンマ区切り文字列 |
-| `screenshots` | スクリーンショット URL の配列 |
-| `localCoverImage` | ダウンロード済みカバー画像のローカルパス |
+| Field                   | Description                                          |
+| ----------------------- | ---------------------------------------------------- |
+| `title`                 | ゲームタイトル                                       |
+| `alternativeTitle`      | 代替タイトルのカンマ区切り文字列                     |
+| `alternativeTitles`     | 代替タイトルの配列                                   |
+| `slug`                  | IGDB の slug                                         |
+| `summary`               | ゲーム概要。DeepL 翻訳が有効なら翻訳後のテキスト     |
+| `storyline`             | ストーリー説明。DeepL 翻訳が有効なら翻訳後のテキスト |
+| `igdbUrl`               | IGDB ページ URL                                      |
+| `website`               | Web サイト URL のカンマ区切り文字列                  |
+| `websites`              | Web サイト URL の配列                                |
+| `platform`              | プラットフォーム名のカンマ区切り文字列               |
+| `platforms`             | プラットフォーム名の配列                             |
+| `genre`                 | ジャンル名のカンマ区切り文字列                       |
+| `genres`                | ジャンル名の配列                                     |
+| `theme`                 | テーマ名のカンマ区切り文字列                         |
+| `themes`                | テーマ名の配列                                       |
+| `gameMode`              | ゲームモード名のカンマ区切り文字列                   |
+| `gameModes`             | ゲームモード名の配列                                 |
+| `playerPerspective`     | 視点名のカンマ区切り文字列                           |
+| `playerPerspectives`    | 視点名の配列                                         |
+| `developer`             | 開発会社名のカンマ区切り文字列                       |
+| `developers`            | 開発会社名の配列                                     |
+| `publisher`             | 販売会社名のカンマ区切り文字列                       |
+| `publishers`            | 販売会社名の配列                                     |
+| `franchise`             | 最初のフランチャイズ名                               |
+| `collection`            | 最初のコレクション名                                 |
+| `firstReleaseDate`      | `YYYY-MM-DD` 形式の発売日                            |
+| `releaseYear`           | 発売年                                               |
+| `rating`                | IGDB の rating                                       |
+| `ratingCount`           | rating 件数                                          |
+| `aggregatedRating`      | aggregated rating                                    |
+| `aggregatedRatingCount` | aggregated rating 件数                               |
+| `totalRating`           | total rating                                         |
+| `totalRatingCount`      | total rating 件数                                    |
+| `coverUrl`              | カバー画像 URL                                       |
+| `coverSmallUrl`         | 小さいカバー画像 URL                                 |
+| `coverLargeUrl`         | 大きいカバー画像 URL                                 |
+| `screenshot`            | スクリーンショット URL のカンマ区切り文字列          |
+| `screenshots`           | スクリーンショット URL の配列                        |
+| `localCoverImage`       | ダウンロード済みカバー画像のローカルパス             |
 
 <br>
 

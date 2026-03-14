@@ -103,6 +103,16 @@ Set the template file path used when creating a note.
 
 If no template file is set, the plugin creates a note from the built-in metadata rendering.
 
+### Translation
+
+Use DeepL to translate long-form fields before writing them into your note.
+
+Only `summary` and `storyline` are translated. Short metadata such as genres, platforms, and company names stay in the original IGDB form.
+
+When the target language is set to `Auto`, the plugin follows your current Obsidian language.
+
+If translation fails, the plugin keeps the original English text and continues note creation.
+
 ### Show cover images in search
 
 Show IGDB cover images in the search results.
@@ -130,25 +140,25 @@ Please also find a definition of the variables used in this template below.
 ```md
 ---
 type: game
-title: "{{title}}"
-aliases: "{{alternativeTitle}}"
-platforms: "{{platform}}"
-genres: "{{genre}}"
-developers: "{{developer}}"
-publishers: "{{publisher}}"
-franchise: "{{franchise}}"
-collection: "{{collection}}"
-released: "{{firstReleaseDate}}"
-year: "{{releaseYear}}"
-rating: "{{totalRating}}"
-igdb: "{{igdbUrl}}"
-cover: "{{coverLargeUrl}}"
-localCover: "{{localCoverImage}}"
-created: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
-updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
+title: '{{title}}'
+aliases: '{{alternativeTitle}}'
+platforms: '{{platform}}'
+genres: '{{genre}}'
+developers: '{{developer}}'
+publishers: '{{publisher}}'
+franchise: '{{franchise}}'
+collection: '{{collection}}'
+released: '{{firstReleaseDate}}'
+year: '{{releaseYear}}'
+rating: '{{totalRating}}'
+igdb: '{{igdbUrl}}'
+cover: '{{coverLargeUrl}}'
+localCover: '{{localCoverImage}}'
+created: '{{DATE:YYYY-MM-DD HH:mm:ss}}'
+updated: '{{DATE:YYYY-MM-DD HH:mm:ss}}'
 ---
 
-<%* if (tp.frontmatter.cover && tp.frontmatter.cover.trim() !== "") { tR += `![cover|200](${tp.frontmatter.cover})` } %>
+<%\* if (tp.frontmatter.cover && tp.frontmatter.cover.trim() !== "") { tR += `![cover|200](${tp.frontmatter.cover})` } %>
 
 # {{title}}
 
@@ -167,47 +177,47 @@ updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
 
 Write `{{name}}` in your template and replace `name` with the desired field.
 
-| Field | Description |
-| --- | --- |
-| `title` | Game title |
-| `alternativeTitle` | Comma-separated alternative titles |
-| `alternativeTitles` | Alternative titles array |
-| `slug` | IGDB slug |
-| `summary` | Game summary |
-| `storyline` | Game storyline |
-| `igdbUrl` | IGDB page URL |
-| `website` | Comma-separated website URLs |
-| `websites` | Website URL array |
-| `platform` | Comma-separated platform names |
-| `platforms` | Platform array |
-| `genre` | Comma-separated genre names |
-| `genres` | Genre array |
-| `theme` | Comma-separated theme names |
-| `themes` | Theme array |
-| `gameMode` | Comma-separated game mode names |
-| `gameModes` | Game mode array |
-| `playerPerspective` | Comma-separated player perspective names |
-| `playerPerspectives` | Player perspective array |
-| `developer` | Comma-separated developer names |
-| `developers` | Developer array |
-| `publisher` | Comma-separated publisher names |
-| `publishers` | Publisher array |
-| `franchise` | First franchise name |
-| `collection` | First collection name |
-| `firstReleaseDate` | Release date in `YYYY-MM-DD` |
-| `releaseYear` | Release year |
-| `rating` | IGDB rating |
-| `ratingCount` | Rating count |
-| `aggregatedRating` | Aggregated rating |
-| `aggregatedRatingCount` | Aggregated rating count |
-| `totalRating` | Total rating |
-| `totalRatingCount` | Total rating count |
-| `coverUrl` | Cover image URL |
-| `coverSmallUrl` | Small cover image URL |
-| `coverLargeUrl` | Large cover image URL |
-| `screenshot` | Comma-separated screenshot URLs |
-| `screenshots` | Screenshot URL array |
-| `localCoverImage` | Local path of the downloaded cover image |
+| Field                   | Description                                                  |
+| ----------------------- | ------------------------------------------------------------ |
+| `title`                 | Game title                                                   |
+| `alternativeTitle`      | Comma-separated alternative titles                           |
+| `alternativeTitles`     | Alternative titles array                                     |
+| `slug`                  | IGDB slug                                                    |
+| `summary`               | Game summary, translated when DeepL translation is enabled   |
+| `storyline`             | Game storyline, translated when DeepL translation is enabled |
+| `igdbUrl`               | IGDB page URL                                                |
+| `website`               | Comma-separated website URLs                                 |
+| `websites`              | Website URL array                                            |
+| `platform`              | Comma-separated platform names                               |
+| `platforms`             | Platform array                                               |
+| `genre`                 | Comma-separated genre names                                  |
+| `genres`                | Genre array                                                  |
+| `theme`                 | Comma-separated theme names                                  |
+| `themes`                | Theme array                                                  |
+| `gameMode`              | Comma-separated game mode names                              |
+| `gameModes`             | Game mode array                                              |
+| `playerPerspective`     | Comma-separated player perspective names                     |
+| `playerPerspectives`    | Player perspective array                                     |
+| `developer`             | Comma-separated developer names                              |
+| `developers`            | Developer array                                              |
+| `publisher`             | Comma-separated publisher names                              |
+| `publishers`            | Publisher array                                              |
+| `franchise`             | First franchise name                                         |
+| `collection`            | First collection name                                        |
+| `firstReleaseDate`      | Release date in `YYYY-MM-DD`                                 |
+| `releaseYear`           | Release year                                                 |
+| `rating`                | IGDB rating                                                  |
+| `ratingCount`           | Rating count                                                 |
+| `aggregatedRating`      | Aggregated rating                                            |
+| `aggregatedRatingCount` | Aggregated rating count                                      |
+| `totalRating`           | Total rating                                                 |
+| `totalRatingCount`      | Total rating count                                           |
+| `coverUrl`              | Cover image URL                                              |
+| `coverSmallUrl`         | Small cover image URL                                        |
+| `coverLargeUrl`         | Large cover image URL                                        |
+| `screenshot`            | Comma-separated screenshot URLs                              |
+| `screenshots`           | Screenshot URL array                                         |
+| `localCoverImage`       | Local path of the downloaded cover image                     |
 
 <br>
 

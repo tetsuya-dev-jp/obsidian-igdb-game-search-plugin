@@ -1,4 +1,5 @@
 import { replaceDateInString } from '@utils/utils';
+import { AUTO_TRANSLATION_LANGUAGE, DEEPL_TARGET_LANGUAGES } from '@utils/deepl_languages';
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import GameSearchPlugin from '../main';
 import { FileNameFormatSuggest } from './suggesters/FileNameFormatSuggester';
@@ -28,6 +29,9 @@ export interface GameSearchPluginSettings {
   showCoverImageInSearch: boolean;
   enableCoverImageSave: boolean;
   coverImagePath: string;
+  enableTranslation: boolean;
+  translationTargetLanguage: string;
+  deeplApiKey: string;
 }
 
 export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
@@ -46,6 +50,9 @@ export const DEFAULT_SETTINGS: GameSearchPluginSettings = {
   showCoverImageInSearch: false,
   enableCoverImageSave: false,
   coverImagePath: '',
+  enableTranslation: false,
+  translationTargetLanguage: AUTO_TRANSLATION_LANGUAGE,
+  deeplApiKey: '',
 };
 
 export class GameSearchSettingTab extends PluginSettingTab {
@@ -64,6 +71,7 @@ export class GameSearchSettingTab extends PluginSettingTab {
     this.createGeneralSettings(containerEl);
     this.createTemplateFileSetting(containerEl);
     this.createIgdbSettings(containerEl);
+    this.createTranslationSettings(containerEl);
     this.createSearchSettings(containerEl);
     this.createNoteSettings(containerEl);
   }
@@ -201,6 +209,53 @@ export class GameSearchSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }),
       );
+  }
+
+  private createTranslationSettings(containerEl: HTMLElement) {
+    this.createHeader('Translation', containerEl);
+
+    new Setting(containerEl)
+      .setName('Enable translation')
+      .setDesc('Translate summary and storyline with DeepL before rendering note content.')
+      .addToggle(toggle =>
+        toggle.setValue(this.plugin.settings.enableTranslation).onChange(async value => {
+          this.plugin.settings.enableTranslation = value;
+          await this.plugin.saveSettings();
+          this.display();
+        }),
+      );
+
+    new Setting(containerEl)
+      .setName('Translation target language')
+      .setDesc('Choose the target language, or follow your current Obsidian language automatically.')
+      .addDropdown(dropdown => {
+        Object.entries(DEEPL_TARGET_LANGUAGES).forEach(([value, label]) => {
+          dropdown.addOption(value, label);
+        });
+
+        dropdown
+          .setValue(this.plugin.settings.translationTargetLanguage)
+          .setDisabled(!this.plugin.settings.enableTranslation)
+          .onChange(async value => {
+            this.plugin.settings.translationTargetLanguage = value;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName('DeepL API key')
+      .setDesc('Stored locally in plugin data and used only for translating summary and storyline.')
+      .addText(text => {
+        text.inputEl.type = 'password';
+        text
+          .setPlaceholder('DeepL API key')
+          .setValue(this.plugin.settings.deeplApiKey)
+          .setDisabled(!this.plugin.settings.enableTranslation)
+          .onChange(async value => {
+            this.plugin.settings.deeplApiKey = value.trim();
+            await this.plugin.saveSettings();
+          });
+      });
   }
 
   private createNoteSettings(containerEl: HTMLElement) {

@@ -103,6 +103,16 @@ IGDB API는 Twitch Developer Service Agreement 조건에 따라 비상업적 용
 
 설정하지 않으면 플러그인의 기본 메타데이터 렌더링을 사용합니다.
 
+### Translation
+
+DeepL 을 사용해 노트에 쓰기 전에 긴 설명 텍스트를 번역할 수 있습니다.
+
+번역 대상은 `summary` 와 `storyline` 뿐입니다. 장르, 플랫폼, 회사명 같은 짧은 메타데이터는 IGDB 원문을 그대로 유지합니다.
+
+대상 언어를 `Auto` 로 두면 현재 Obsidian 언어 설정을 따라갑니다.
+
+번역에 실패해도 노트 생성은 계속되며, 영어 원문을 그대로 사용합니다.
+
 ### Show cover images in search
 
 검색 결과에 IGDB 커버 이미지를 표시합니다.
@@ -130,25 +140,25 @@ IGDB API는 Twitch Developer Service Agreement 조건에 따라 비상업적 용
 ```md
 ---
 type: game
-title: "{{title}}"
-aliases: "{{alternativeTitle}}"
-platforms: "{{platform}}"
-genres: "{{genre}}"
-developers: "{{developer}}"
-publishers: "{{publisher}}"
-franchise: "{{franchise}}"
-collection: "{{collection}}"
-released: "{{firstReleaseDate}}"
-year: "{{releaseYear}}"
-rating: "{{totalRating}}"
-igdb: "{{igdbUrl}}"
-cover: "{{coverLargeUrl}}"
-localCover: "{{localCoverImage}}"
-created: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
-updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
+title: '{{title}}'
+aliases: '{{alternativeTitle}}'
+platforms: '{{platform}}'
+genres: '{{genre}}'
+developers: '{{developer}}'
+publishers: '{{publisher}}'
+franchise: '{{franchise}}'
+collection: '{{collection}}'
+released: '{{firstReleaseDate}}'
+year: '{{releaseYear}}'
+rating: '{{totalRating}}'
+igdb: '{{igdbUrl}}'
+cover: '{{coverLargeUrl}}'
+localCover: '{{localCoverImage}}'
+created: '{{DATE:YYYY-MM-DD HH:mm:ss}}'
+updated: '{{DATE:YYYY-MM-DD HH:mm:ss}}'
 ---
 
-<%* if (tp.frontmatter.cover && tp.frontmatter.cover.trim() !== "") { tR += `![cover|200](${tp.frontmatter.cover})` } %>
+<%\* if (tp.frontmatter.cover && tp.frontmatter.cover.trim() !== "") { tR += `![cover|200](${tp.frontmatter.cover})` } %>
 
 # {{title}}
 
@@ -167,47 +177,47 @@ updated: "{{DATE:YYYY-MM-DD HH:mm:ss}}"
 
 템플릿에서는 `{{name}}` 형식으로 변수를 작성하고, `name` 부분을 원하는 필드명으로 바꿔 사용합니다.
 
-| Field | Description |
-| --- | --- |
-| `title` | 게임 제목 |
-| `alternativeTitle` | 대체 제목의 쉼표 구분 문자열 |
-| `alternativeTitles` | 대체 제목 배열 |
-| `slug` | IGDB slug |
-| `summary` | 게임 요약 |
-| `storyline` | 스토리 설명 |
-| `igdbUrl` | IGDB 페이지 URL |
-| `website` | 웹사이트 URL의 쉼표 구분 문자열 |
-| `websites` | 웹사이트 URL 배열 |
-| `platform` | 플랫폼 이름의 쉼표 구분 문자열 |
-| `platforms` | 플랫폼 이름 배열 |
-| `genre` | 장르 이름의 쉼표 구분 문자열 |
-| `genres` | 장르 이름 배열 |
-| `theme` | 테마 이름의 쉼표 구분 문자열 |
-| `themes` | 테마 이름 배열 |
-| `gameMode` | 게임 모드 이름의 쉼표 구분 문자열 |
-| `gameModes` | 게임 모드 이름 배열 |
-| `playerPerspective` | 시점 이름의 쉼표 구분 문자열 |
-| `playerPerspectives` | 시점 이름 배열 |
-| `developer` | 개발사 이름의 쉼표 구분 문자열 |
-| `developers` | 개발사 이름 배열 |
-| `publisher` | 퍼블리셔 이름의 쉼표 구분 문자열 |
-| `publishers` | 퍼블리셔 이름 배열 |
-| `franchise` | 첫 번째 프랜차이즈 이름 |
-| `collection` | 첫 번째 컬렉션 이름 |
-| `firstReleaseDate` | `YYYY-MM-DD` 형식의 출시일 |
-| `releaseYear` | 출시 연도 |
-| `rating` | IGDB rating |
-| `ratingCount` | rating 개수 |
-| `aggregatedRating` | aggregated rating |
-| `aggregatedRatingCount` | aggregated rating 개수 |
-| `totalRating` | total rating |
-| `totalRatingCount` | total rating 개수 |
-| `coverUrl` | 커버 이미지 URL |
-| `coverSmallUrl` | 작은 커버 이미지 URL |
-| `coverLargeUrl` | 큰 커버 이미지 URL |
-| `screenshot` | 스크린샷 URL의 쉼표 구분 문자열 |
-| `screenshots` | 스크린샷 URL 배열 |
-| `localCoverImage` | 다운로드한 커버 이미지의 로컬 경로 |
+| Field                   | Description                                         |
+| ----------------------- | --------------------------------------------------- |
+| `title`                 | 게임 제목                                           |
+| `alternativeTitle`      | 대체 제목의 쉼표 구분 문자열                        |
+| `alternativeTitles`     | 대체 제목 배열                                      |
+| `slug`                  | IGDB slug                                           |
+| `summary`               | 게임 요약. DeepL 번역이 켜져 있으면 번역된 텍스트   |
+| `storyline`             | 스토리 설명. DeepL 번역이 켜져 있으면 번역된 텍스트 |
+| `igdbUrl`               | IGDB 페이지 URL                                     |
+| `website`               | 웹사이트 URL의 쉼표 구분 문자열                     |
+| `websites`              | 웹사이트 URL 배열                                   |
+| `platform`              | 플랫폼 이름의 쉼표 구분 문자열                      |
+| `platforms`             | 플랫폼 이름 배열                                    |
+| `genre`                 | 장르 이름의 쉼표 구분 문자열                        |
+| `genres`                | 장르 이름 배열                                      |
+| `theme`                 | 테마 이름의 쉼표 구분 문자열                        |
+| `themes`                | 테마 이름 배열                                      |
+| `gameMode`              | 게임 모드 이름의 쉼표 구분 문자열                   |
+| `gameModes`             | 게임 모드 이름 배열                                 |
+| `playerPerspective`     | 시점 이름의 쉼표 구분 문자열                        |
+| `playerPerspectives`    | 시점 이름 배열                                      |
+| `developer`             | 개발사 이름의 쉼표 구분 문자열                      |
+| `developers`            | 개발사 이름 배열                                    |
+| `publisher`             | 퍼블리셔 이름의 쉼표 구분 문자열                    |
+| `publishers`            | 퍼블리셔 이름 배열                                  |
+| `franchise`             | 첫 번째 프랜차이즈 이름                             |
+| `collection`            | 첫 번째 컬렉션 이름                                 |
+| `firstReleaseDate`      | `YYYY-MM-DD` 형식의 출시일                          |
+| `releaseYear`           | 출시 연도                                           |
+| `rating`                | IGDB rating                                         |
+| `ratingCount`           | rating 개수                                         |
+| `aggregatedRating`      | aggregated rating                                   |
+| `aggregatedRatingCount` | aggregated rating 개수                              |
+| `totalRating`           | total rating                                        |
+| `totalRatingCount`      | total rating 개수                                   |
+| `coverUrl`              | 커버 이미지 URL                                     |
+| `coverSmallUrl`         | 작은 커버 이미지 URL                                |
+| `coverLargeUrl`         | 큰 커버 이미지 URL                                  |
+| `screenshot`            | 스크린샷 URL의 쉼표 구분 문자열                     |
+| `screenshots`           | 스크린샷 URL 배열                                   |
+| `localCoverImage`       | 다운로드한 커버 이미지의 로컬 경로                  |
 
 <br>
 
